@@ -46,7 +46,10 @@
           <div id="tasks-list"></div>
         </div>
 
-        <button id="calc-tasks" type="button">Рассчитать</button>
+        <div class="live-summary">
+          <span id="tasks-primary-total">Первичный балл: 0</span>
+        </div>
+        <button id="calc-tasks" class="action-btn" type="button">Рассчитать</button>
         <p id="result-tasks" class="result" aria-live="polite"></p>
       </section>
 
@@ -61,7 +64,7 @@
           <input id="primary-input" type="number" min="0" step="1" value="0">
         </div>
 
-        <button id="calc-primary" type="button">Перевести</button>
+        <button id="calc-primary" class="action-btn" type="button">Перевести</button>
         <p id="result-primary" class="result" aria-live="polite"></p>
       </section>
     </section>

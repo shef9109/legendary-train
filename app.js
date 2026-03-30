@@ -11,6 +11,7 @@
     calcPrimary: document.getElementById("calc-primary"),
     resultTasks: document.getElementById("result-tasks"),
     resultPrimary: document.getElementById("result-primary"),
+    tasksPrimaryTotal: document.getElementById("tasks-primary-total"),
   };
 
   const state = {
@@ -18,10 +19,6 @@
     subjects: null,
     order: [],
   };
-
-  function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
 
   function parseIntSafe(raw) {
     const parsed = Number.parseInt(String(raw), 10);
@@ -84,24 +81,44 @@
     tasks.forEach((maxScore, i) => {
       const row = document.createElement("div");
       row.className = "task-row";
+      row.dataset.selected = "0";
 
       const label = document.createElement("span");
       label.textContent = `№${i + 1} (макс. ${maxScore})`;
 
-      const input = document.createElement("input");
-      input.type = "number";
-      input.min = "0";
-      input.max = String(maxScore);
-      input.step = "1";
-      input.value = "0";
-      input.dataset.maxScore = String(maxScore);
+      const scoreButtons = document.createElement("div");
+      scoreButtons.className = "score-buttons";
+      scoreButtons.dataset.maxScore = String(maxScore);
+
+      for (let score = 0; score <= maxScore; score += 1) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "score-btn";
+        if (score === 0) {
+          btn.classList.add("is-active");
+        }
+        btn.dataset.score = String(score);
+        btn.textContent = String(score);
+        scoreButtons.appendChild(btn);
+      }
 
       row.appendChild(label);
-      row.appendChild(input);
+      row.appendChild(scoreButtons);
       dom.tasksList.appendChild(row);
     });
 
+    dom.tasksPrimaryTotal.textContent = "Первичный балл: 0";
     dom.resultTasks.textContent = "";
+  }
+
+  function updateTasksTotal() {
+    const rows = dom.tasksList.querySelectorAll(".task-row");
+    let total = 0;
+    for (const row of rows) {
+      total += parseIntSafe(row.dataset.selected);
+    }
+    dom.tasksPrimaryTotal.textContent = `Первичный балл: ${total}`;
+    return total;
   }
 
   function updateMode() {
@@ -112,16 +129,7 @@
 
   function handleCalcTasks() {
     const subjectKey = dom.subjectTasks.value;
-    const inputs = dom.tasksList.querySelectorAll("input");
-
-    let total = 0;
-    for (const input of inputs) {
-      const maxScore = parseIntSafe(input.dataset.maxScore);
-      const value = clamp(parseIntSafe(input.value), 0, maxScore);
-      input.value = String(value);
-      total += value;
-    }
-
+    const total = updateTasksTotal();
     dom.resultTasks.textContent = calcByPrimary(subjectKey, total);
   }
 
@@ -144,6 +152,20 @@
 
     dom.mode.addEventListener("change", updateMode);
     dom.subjectTasks.addEventListener("change", renderTasks);
+    dom.tasksList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || !target.classList.contains("score-btn")) {
+        return;
+      }
+      const row = target.closest(".task-row");
+      if (!row) {
+        return;
+      }
+      row.dataset.selected = target.dataset.score || "0";
+      row.querySelectorAll(".score-btn").forEach((btn) => btn.classList.remove("is-active"));
+      target.classList.add("is-active");
+      updateTasksTotal();
+    });
     dom.calcTasks.addEventListener("click", handleCalcTasks);
     dom.calcPrimary.addEventListener("click", handleCalcPrimary);
   }
