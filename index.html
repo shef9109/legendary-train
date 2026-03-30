@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Калькулятор баллов ЕГЭ 2026</title>
   <meta name="description" content="Калькулятор баллов ЕГЭ 2026: по заданиям и по первичному баллу.">
+  <meta name="theme-color" content="#0f6a62">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ЕГЭ Калькулятор">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -21,6 +28,10 @@
       <h1>Калькулятор баллов</h1>
       <p class="subtitle">Два режима: подсчёт по заданиям и перевод из первичного в тестовый балл.</p>
       <p class="source">Источники: <a href="https://4ege.ru/novosti-ege/4023-shkala-perevoda-ballov-ege.html" target="_blank" rel="noopener">шкала перевода</a> и <a href="https://4ege.ru/novosti-ege/76411-raspredelenie-ballov-ege-2026-po-vsem-predmetam.html" target="_blank" rel="noopener">разбаловка заданий</a>.</p>
+      <div class="install-row">
+        <button id="install-app" class="action-btn install-btn hidden" type="button">Установить приложение</button>
+        <p id="ios-install-hint" class="install-hint hidden">На iPhone/iPad: Поделиться -> На экран «Домой».</p>
+      </div>
     </section>
 
     <section class="card app-card fade-in delay-1">

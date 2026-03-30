@@ -1,0 +1,29 @@
+{
+  "name": "Калькулятор баллов ЕГЭ 2026",
+  "short_name": "ЕГЭ Калькулятор",
+  "description": "Калькулятор первичных и тестовых баллов ЕГЭ 2026",
+  "lang": "ru",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f3f8fb",
+  "theme_color": "#0f6a62",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

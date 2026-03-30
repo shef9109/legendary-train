@@ -12,12 +12,14 @@
     resultTasks: document.getElementById("result-tasks"),
     resultPrimary: document.getElementById("result-primary"),
     tasksPrimaryTotal: document.getElementById("tasks-primary-total"),
+    installApp: document.getElementById("install-app"),
+    iosInstallHint: document.getElementById("ios-install-hint"),
   };
 
   const state = {
-    data: null,
     subjects: null,
     order: [],
+    installPromptEvent: null,
   };
 
   function parseIntSafe(raw) {
@@ -73,11 +75,22 @@
     return `Первичный балл: ${primary}. Тестовый балл: ${test}`;
   }
 
+  function updateTasksTotal() {
+    const rows = dom.tasksList.querySelectorAll(".task-row");
+    let total = 0;
+    rows.forEach((row) => {
+      total += parseIntSafe(row.dataset.selected);
+    });
+    dom.tasksPrimaryTotal.textContent = `Первичный балл: ${total}`;
+    return total;
+  }
+
   function renderTasks() {
     const subjectKey = dom.subjectTasks.value;
     const tasks = state.subjects[subjectKey].task_scores;
 
     dom.tasksList.innerHTML = "";
+
     tasks.forEach((maxScore, i) => {
       const row = document.createElement("div");
       row.className = "task-row";
@@ -88,7 +101,6 @@
 
       const scoreButtons = document.createElement("div");
       scoreButtons.className = "score-buttons";
-      scoreButtons.dataset.maxScore = String(maxScore);
 
       for (let score = 0; score <= maxScore; score += 1) {
         const btn = document.createElement("button");
@@ -111,16 +123,6 @@
     dom.resultTasks.textContent = "";
   }
 
-  function updateTasksTotal() {
-    const rows = dom.tasksList.querySelectorAll(".task-row");
-    let total = 0;
-    for (const row of rows) {
-      total += parseIntSafe(row.dataset.selected);
-    }
-    dom.tasksPrimaryTotal.textContent = `Первичный балл: ${total}`;
-    return total;
-  }
-
   function updateMode() {
     const isTasks = dom.mode.value === "by_tasks";
     dom.modeByTasks.classList.toggle("hidden", !isTasks);
@@ -135,16 +137,62 @@
 
   function handleCalcPrimary() {
     const subjectKey = dom.subjectPrimary.value;
-    const primary = parseIntSafe(dom.primaryInput.value);
-    dom.primaryInput.value = String(Math.max(0, primary));
+    const primary = Math.max(0, parseIntSafe(dom.primaryInput.value));
+    dom.primaryInput.value = String(primary);
     dom.resultPrimary.textContent = calcByPrimary(subjectKey, primary);
+  }
+
+  function isIos() {
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  }
+
+  function isStandaloneMode() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+
+  function initPwaUI() {
+    if (isIos() && !isStandaloneMode()) {
+      dom.iosInstallHint.classList.remove("hidden");
+    }
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      state.installPromptEvent = event;
+      dom.installApp.classList.remove("hidden");
+    });
+
+    dom.installApp.addEventListener("click", async () => {
+      if (!state.installPromptEvent) {
+        return;
+      }
+      state.installPromptEvent.prompt();
+      await state.installPromptEvent.userChoice;
+      state.installPromptEvent = null;
+      dom.installApp.classList.add("hidden");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      dom.installApp.classList.add("hidden");
+      dom.iosInstallHint.classList.add("hidden");
+    });
+  }
+
+  async function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) {
+      return;
+    }
+    try {
+      await navigator.serviceWorker.register("sw.js");
+    } catch (error) {
+      console.error("SW registration failed", error);
+    }
   }
 
   async function init() {
     const response = await fetch("data/ege_2026.json", { cache: "no-store" });
-    state.data = await response.json();
-    state.subjects = state.data.subjects;
-    state.order = state.data.subjects_order;
+    const data = await response.json();
+    state.subjects = data.subjects;
+    state.order = data.subjects_order;
 
     setSubjectOptions(dom.subjectTasks);
     setSubjectOptions(dom.subjectPrimary);
@@ -152,6 +200,7 @@
 
     dom.mode.addEventListener("change", updateMode);
     dom.subjectTasks.addEventListener("change", renderTasks);
+
     dom.tasksList.addEventListener("click", (event) => {
       const target = event.target;
       if (!(target instanceof HTMLElement) || !target.classList.contains("score-btn")) {
@@ -166,8 +215,12 @@
       target.classList.add("is-active");
       updateTasksTotal();
     });
+
     dom.calcTasks.addEventListener("click", handleCalcTasks);
     dom.calcPrimary.addEventListener("click", handleCalcPrimary);
+
+    initPwaUI();
+    registerServiceWorker();
   }
 
   init().catch((err) => {
