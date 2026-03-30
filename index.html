@@ -1,0 +1,70 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор баллов ЕГЭ 2026</title>
+  <meta name="description" content="Калькулятор баллов ЕГЭ 2026: по заданиям и по первичному баллу.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="bg-shape bg-shape-1" aria-hidden="true"></div>
+  <div class="bg-shape bg-shape-2" aria-hidden="true"></div>
+
+  <main class="layout">
+    <section class="hero card fade-in">
+      <p class="eyebrow">ЕГЭ 2026</p>
+      <h1>Калькулятор баллов</h1>
+      <p class="subtitle">Два режима: подсчёт по заданиям и перевод из первичного в тестовый балл.</p>
+      <p class="source">Источники: <a href="https://4ege.ru/novosti-ege/4023-shkala-perevoda-ballov-ege.html" target="_blank" rel="noopener">шкала перевода</a> и <a href="https://4ege.ru/novosti-ege/76411-raspredelenie-ballov-ege-2026-po-vsem-predmetam.html" target="_blank" rel="noopener">разбаловка заданий</a>.</p>
+    </section>
+
+    <section class="card app-card fade-in delay-1">
+      <div class="control-group">
+        <label for="mode">Режим</label>
+        <select id="mode">
+          <option value="by_tasks">По заданиям</option>
+          <option value="by_primary">По первичному баллу</option>
+        </select>
+      </div>
+
+      <section id="mode-by-tasks" class="mode-pane">
+        <div class="control-group">
+          <label for="subject-tasks">Предмет</label>
+          <select id="subject-tasks"></select>
+        </div>
+
+        <div class="tasks-box">
+          <div class="tasks-header">
+            <span>Задание</span>
+            <span>Баллы</span>
+          </div>
+          <div id="tasks-list"></div>
+        </div>
+
+        <button id="calc-tasks" type="button">Рассчитать</button>
+        <p id="result-tasks" class="result" aria-live="polite"></p>
+      </section>
+
+      <section id="mode-by-primary" class="mode-pane hidden">
+        <div class="control-group">
+          <label for="subject-primary">Предмет</label>
+          <select id="subject-primary"></select>
+        </div>
+
+        <div class="control-group">
+          <label for="primary-input">Первичный балл</label>
+          <input id="primary-input" type="number" min="0" step="1" value="0">
+        </div>
+
+        <button id="calc-primary" type="button">Перевести</button>
+        <p id="result-primary" class="result" aria-live="polite"></p>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
